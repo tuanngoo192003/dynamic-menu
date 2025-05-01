@@ -1,0 +1,16 @@
+.box-border {
+    border-radius: 3px;
+    border: solid 1px #ccc7c786;
+    justify-content: center;
+    display: flex;
+    
+}
+
+.content {
+    border-radius: 3px;
+    border: solid 1px #ccc7c786;
+}
+
+:root {
+    ---base-color: #1610d6;
+}
