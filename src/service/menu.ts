@@ -68,6 +68,27 @@ export const GetMenu = (): Promise<MenuModel[]> => {
                 isChecked: false,
                 children: [],
               },
+              { 
+                id: 10,
+                name: '経済',
+                level: 1,
+                isChecked: false,
+                children: [],
+              },
+              { 
+                id: 11,
+                name: 'IT',
+                level: 1,
+                isChecked: false,
+                children: [],
+              },
+              { 
+                id: 12,
+                name: '情報',
+                level: 1,
+                isChecked: false,
+                children: [],
+              },
             ],
           },
         ]);
