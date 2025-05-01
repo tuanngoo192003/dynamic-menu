@@ -8,6 +8,7 @@ const DynamicMenu: React.FC = () => {
 
     const { menu, loading, handleGetMenu } = useMenu()
     const [menuGot, setMenuGot] = useState<MenuModel[]>([])
+    let totalItem = 0
     // const [numOfItem, setNumOfItem] = useState<number>(0)
     useEffect(() => {
         handleGetMenu()
@@ -15,6 +16,48 @@ const DynamicMenu: React.FC = () => {
     useEffect(() => {
         setMenuGot(menu)
     }, [menu])
+
+    const countTotalItem = (menu: MenuModel[]) => {
+        menu.forEach(item => {
+            totalItem++
+            if (item.children?.length > 0) {
+                countTotalItem(item.children)
+            }
+        })
+    }
+
+    const flattenMenu = (menu: MenuModel[], totalItem: number): MenuModel[] => {
+        let row = 0
+        let col = 0
+        const numRows = Math.ceil(totalItem/3)
+        const matrix: MenuModel[][] = [[], [], []]
+
+        const traverse = (menu: MenuModel[]) => {
+            for(const item of menu) {
+                matrix[col][row] = item 
+                row++
+                if(row == numRows) {
+                    col++
+                    row = 0
+                }
+                if (item.children && item.children.length > 0) {
+                    traverse(item.children)
+                }
+            }
+        }
+        traverse(menu)
+
+        const computedMenu: MenuModel[] = []
+        for (let row = 0; row < matrix[0].length; row++) {
+            for (let col = 0; col < matrix.length; col++) {
+              const item = matrix[col][row];
+              if (item) {
+                computedMenu.push(item);
+              }
+            }
+          }
+        return computedMenu
+    }
 
     const checkChildren = (item: MenuModel) => {
         const cloneMenu = structuredClone(menuGot);
@@ -43,7 +86,11 @@ const DynamicMenu: React.FC = () => {
     };
 
     const renderChildren = (menuItems: MenuModel[]): JSX.Element[] => {
-        return menuItems.map(item => (
+        totalItem = 0
+        countTotalItem(menuItems)
+        const computedMenuItems = flattenMenu(menuItems, totalItem)
+        console.log(computedMenuItems)
+        return computedMenuItems.map(item => (
             <React.Fragment key={item.id}>
                 <Col span={1} className={"box-border"}>
                     <Checkbox checked={item.isChecked} onChange={() => checkChildren(item)} />
@@ -57,7 +104,6 @@ const DynamicMenu: React.FC = () => {
                     }}>
                     {item.name}
                 </Col>
-                {item.children && item.children.length > 0 && renderChildren(item.children)}
             </React.Fragment>
         ))
     }
