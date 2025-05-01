@@ -61,7 +61,7 @@ const DynamicMenu: React.FC = () => {
 
     const checkChildren = (item: MenuModel) => {
         const cloneMenu = structuredClone(menuGot);
-
+    
         const updateChildNode = (node: MenuModel[], isChecked: boolean) => {
             node.forEach(child => {
                 child.isChecked = isChecked;
@@ -70,17 +70,23 @@ const DynamicMenu: React.FC = () => {
                 }
             });
         }
-
-        const updateNode = (nodes: MenuModel[]) => {
+    
+        const updateNode = (nodes: MenuModel[]): boolean => {
             for (const node of nodes) {
                 if (node.id === item.id) {
                     node.isChecked = !node.isChecked;
-                    updateChildNode(node.children, node.isChecked)
-                    break;
+                    updateChildNode(node.children, node.isChecked);
+                    return true; // stop traversal once found
+                }
+                if (node.children.length > 0) {
+                    if (updateNode(node.children)) {
+                        return true;
+                    }
                 }
             }
+            return false;
         };
-
+    
         updateNode(cloneMenu);
         setMenuGot(cloneMenu);
     };
